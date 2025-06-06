@@ -26,8 +26,8 @@ This Python script is designed to monitor GlobalProtect login failures, detect s
      - 🔘 **Graylist:** Known user fails ≥10 times in 10 minutes
      - 🔴 **Blocklist:** Unknown user fails ≥3 times in 1h or ≥6 times in 24h
    - Saves lists to:
-     - `gp_edl_gray.html`
-     - `gp_eld_black.html`
+     - `gp_edl_gray.txt`
+     - `gp_eld_black.txt`
 
 4. **HTTP Server**
    - Serves the above EDLs on a configurable port (default: 8080)
@@ -56,14 +56,14 @@ This Python script is designed to monitor GlobalProtect login failures, detect s
    - Track login failures per IP
    - Decide:
      - Add to graylist (10 failures in 10 min)
-     - Add to blocklist (3 failures in 1h or 6 in 24h)
+     - Add to blocklist (5 failures in 1h or 6 in 24h)
    - Write to `.html` files
 
 ---
 
 ## ⚙️ Firewall Syslog Configuration:
 - Firewall must be configured to send GP Authentication failure and Config commit syslog message using JSON payload
-- In the **"Syslog Server Profile"**, create a profile that points to the Server IP address that hosts the Python script, e.g. 192.168.1.10:1514"
+- In the **"Syslog Server Profile"**, create a profile that points to the Server IP address that hosts the Python script, e.g., 192.168.1.10:1514.
 - In **"Custom Log Format"** Log TYPE **"Config"** use below JSON as Config Log Format
 ```
 {"cmd":"$cmd"}
@@ -128,8 +128,8 @@ This Python script is designed to monitor GlobalProtect login failures, detect s
   - `gp_scanning_detection_log.jsonl`: All login attempts
   - `gp_scanning_detection_users.json`: User list
 - **EDL Files**:
-  - `gp_edl_gray.html`: Graylisted IPs
-  - `gp_eld_black.html`: Blocklisted IPs
+  - `gp_edl_gray.txt`: Graylisted IPs
+  - `gp_eld_black.txt`: Blocklisted IPs
 - **Run Frequency**:
   - Local DB Fetcher: every 60 minutes
   - Detection Engine: every 10 minutes
@@ -138,7 +138,7 @@ This Python script is designed to monitor GlobalProtect login failures, detect s
 
 ## 🧾 Runtime Logging Format
 
-Every log includes timestamp (Asia/Dubai):
+Every log includes a timestamp (Asia/Dubai):
 
 ```python
 print(f"{log_timestamp()} ✅ Message here.")
