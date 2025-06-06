@@ -1,3 +1,4 @@
+
 # 🌐 GlobalProtect Brute-force Detection & EDL Generator
 
 ## 🧩 Purpose:
@@ -62,6 +63,7 @@ This Python script is designed to monitor GlobalProtect login failures, detect s
 
 ## 📊 ASCII Architecture Diagram
 
+```
                     +---------------------------+
                     |   Palo Alto Firewall      |
                     |     (Syslog Source)       |
@@ -100,6 +102,7 @@ This Python script is designed to monitor GlobalProtect login failures, detect s
            +-------------------------------------------------------------+
            |    Lightweight HTTP Server (port 8080 or configured port)   |
            +-------------------------------------------------------------+
+```
 
 ---
 
