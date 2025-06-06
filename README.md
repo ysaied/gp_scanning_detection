@@ -10,7 +10,7 @@ This Python script is designed to monitor GlobalProtect login failures, detect s
 
 1. **Syslog Listener**
    - Listens on UDP port `1514` for syslog events.
-   - Parses logs and extracts JSON payloads.
+   - Parses logs and extracts JSON payloads. Firewall MUST be set to send JSON in syslog payload
    - Logs events into a file: `gp_scanning_detection_log.jsonl`.
    - If log includes `cmd`, it triggers the GP Local DB fetcher.
 
@@ -61,6 +61,20 @@ This Python script is designed to monitor GlobalProtect login failures, detect s
 
 ---
 
+## ⚙️ Firewall Syslog Configuration:
+- Firewall must be configured to send GP Authentication failure and Config commit syslog message using JSON payload
+- In the **"Syslog Server Profile"**, create a profile that points to the Server IP address that hosts the Python script, e.g. 192.168.1.10:1514"
+- In **"Custom Log Format"** Log TYPE **"Config"** use below JSON as Config Log Format
+```
+{"cmd":"$cmd"}
+``` 
+- In **"Custom Log Format"** Log TYPE **"Globalprotect"** use below JSON as GlobalProtect Log Format
+```
+{"gp_component":"$eventid","username":"$srcuser","ip_address":"$public_ip","region":"$srcregion","time":"$receive_time"}
+```
+
+---
+
 ## 📊 ASCII Architecture Diagram
 
 ```
@@ -83,19 +97,19 @@ This Python script is designed to monitor GlobalProtect login failures, detect s
                    +-------------+--------------+
                    |                            |
                    v                            v
-        +----------------------+    +-------------------------+
-        | GP Local DB Fetcher  |    | Detection Engine        |
-        | Timer + On-Demand    |    | Every 10 mins           |
-        +----------------------+    |                         |
+        +----------------------+     +------------------------+
+        | GP Local DB Fetcher  |     | Detection Engine       |
+        | Timer + On-Demand    |     | Every 10 mins          |
+        +----------------------+     |                        |
                 |                    | Reads logs + users     |
                 v                    | Determines violations  |
-  gp_scanning_detection_users.json   +-------------------------+
+  gp_scanning_detection_users.json   +------------------------+
                                                |
                           +--------------------+--------------------+
                           |                                         |
                           v                                         v
          +-----------------------------+        +------------------------------+
-         | gp_edl_gray.html (EDL)      |        | gp_eld_black.html (EDL)      |
+         | gp_edl_gray.txt (EDL)       |        | gp_eld_black.txt (EDL)       |
          +-----------------------------+        +------------------------------+
                           |                                         |
                           v                                         v
@@ -150,6 +164,3 @@ Examples:
 
 ## 📦 Optional Improvements (Future Ideas)
 - Dockerize this script
-- Systemd service for always-on behavior
-- Add basic auth to HTTP server
-- Enable dynamic rule sync via firewall API
